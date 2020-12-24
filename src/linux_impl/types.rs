@@ -116,6 +116,7 @@ impl Drop for AbsSetup {
     }
 }
 
+#[derive(Debug)]
 pub struct SafeInputEvent {
     pub code: u16,
     pub r#type: u16,

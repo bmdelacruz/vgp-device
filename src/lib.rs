@@ -82,6 +82,8 @@ pub struct VgpDeviceForceFeedback {
 pub enum VgpDeviceEvent {
     None,
     Unsupported,
+    ForceFeedbackPlayed(i16),
+    ForceFeedbackStopped(i16),
     ForceFeedbackUploaded(VgpDeviceForceFeedback),
     ForceFeedbackErased(i16),
 }

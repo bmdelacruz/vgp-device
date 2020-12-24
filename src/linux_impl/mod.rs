@@ -268,9 +268,25 @@ impl VgpDevice for VgpDeviceImpl {
                                 force_feedback_erase.get_effect_id() as i16,
                             ))
                         } else {
+                            log::warn!("Got an unsupported input event: {:?}", input_event);
+
                             Ok(VgpDeviceEvent::Unsupported)
                         }
+                    } else if input_event.r#type == EV_FF as u16 {
+                        if input_event.value == 0 {
+                            Ok(VgpDeviceEvent::ForceFeedbackStopped(
+                                input_event.code as i16,
+                            ))
+                        } else if input_event.value == 1 {
+                            Ok(VgpDeviceEvent::ForceFeedbackPlayed(input_event.code as i16))
+                        } else {
+                            Err(VgpError::Unknown(VgpUnknownError::new(format!(
+                                "Expected 0 or 1 for value of force feedback input event. Got {}. Input event: {:?}", input_event.value, input_event
+                            ))))
+                        }
                     } else {
+                        log::warn!("Got an unsupported input event: {:?}", input_event);
+
                         Ok(VgpDeviceEvent::Unsupported)
                     }
                 }
