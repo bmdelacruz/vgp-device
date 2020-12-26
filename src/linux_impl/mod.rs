@@ -168,7 +168,7 @@ impl VgpDevice for VgpDeviceImpl {
             }
             VgpDeviceInput::MoveThumbStick { thumb_stick, x, y } => {
                 let x_change_input_event = InputEvent::from(SafeInputEvent {
-                    r#type: EV_KEY as u16,
+                    r#type: EV_ABS as u16,
                     code: match thumb_stick {
                         VgpDeviceThumbStick::Left => ABS_X as u16,
                         VgpDeviceThumbStick::Right => ABS_RX as u16,
@@ -181,7 +181,7 @@ impl VgpDevice for VgpDeviceImpl {
                     Errno::result(n).to_vgp_result()?;
                 }
                 let y_change_input_event = InputEvent::from(SafeInputEvent {
-                    r#type: EV_KEY as u16,
+                    r#type: EV_ABS as u16,
                     code: match thumb_stick {
                         VgpDeviceThumbStick::Left => ABS_Y as u16,
                         VgpDeviceThumbStick::Right => ABS_RY as u16,
