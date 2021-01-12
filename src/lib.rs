@@ -3,6 +3,9 @@ use std::{
     fmt::{Display, Formatter},
 };
 
+mod api;
+pub use api::*;
+
 #[cfg(target_os = "linux")]
 mod linux_impl;
 #[cfg(target_os = "linux")]

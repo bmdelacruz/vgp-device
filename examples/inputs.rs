@@ -31,3 +31,7 @@ fn main() {
 
     println!("device closed");
 }
+
+#[cfg(target_os = "windows")]
+fn main() {
+}
