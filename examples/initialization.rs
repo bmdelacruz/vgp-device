@@ -1,13 +1,14 @@
 use std::sync::{atomic::AtomicBool, Arc};
 
-use vgp_device::VgpDevice;
-use vgp_device::VgpDeviceImpl;
+use vgp_device::Bus;
 
-#[cfg(target_os = "linux")]
 fn main() {
-    let _device = VgpDeviceImpl::new().unwrap();
+    simple_logger::SimpleLogger::default().init().unwrap();
 
-    println!("device opened");
+    let mut bus = Bus::new().unwrap();
+    let device = bus.plug_in().unwrap();
+
+    log::info!("device opened");
 
     let should_stop = Arc::new(AtomicBool::new(false));
     let should_stop_clone = Arc::clone(&should_stop);
@@ -19,9 +20,7 @@ fn main() {
 
     while !should_stop.load(std::sync::atomic::Ordering::SeqCst) {}
 
-    println!("device closed");
-}
+    device.unplug().unwrap();
 
-#[cfg(target_os = "windows")]
-fn main() {
+    log::info!("device closed");
 }

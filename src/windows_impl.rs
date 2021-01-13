@@ -85,16 +85,16 @@ impl Device {
         self.device.put_input(input).map_with_vgp_error()
     }
 
-    pub fn get_output(&mut self) -> Output {
+    pub fn get_output(&mut self) -> Result<Output, Error> {
         match self.device.get_output() {
             Some(output) => match output {
-                vgm::Output::Rumble(large_motor, small_motor) => Output::Rumble {
+                vgm::Output::Rumble(large_motor, small_motor) => Ok(Output::Rumble {
                     large_motor: large_motor.into(),
                     small_motor: small_motor.into(),
-                },
-                vgm::Output::Led(_) => Output::Unsupported,
+                }),
+                vgm::Output::Led(_) => Ok(Output::Unsupported),
             },
-            None => Output::None,
+            None => Ok(Output::None),
         }
     }
 

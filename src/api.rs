@@ -65,7 +65,7 @@ pub enum Error {
     Unknown(String),
 }
 
-pub trait PlatformErrorExt<T> {
+pub(crate) trait PlatformErrorExt<T> {
     fn map_with_vgp_error(self) -> Result<T, Error>;
 }
 

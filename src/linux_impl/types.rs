@@ -2,7 +2,6 @@ use std::alloc::{alloc, dealloc, Layout};
 
 use super::bindings::consts::*;
 use super::bindings::types::*;
-use crate::{VgpDeviceForceFeedback, VgpDeviceForceFeedbackReplay, VgpDeviceForceFeedbackType};
 
 pub struct SafeSetup {
     pub bustype: u16,
@@ -183,6 +182,11 @@ impl Drop for InputEvent {
     }
 }
 
+pub enum ForceFeedback {
+    Rumble { large_motor: u16, small_motor: u16 },
+    Unsupported,
+}
+
 pub struct ForceFeedbackUpload {
     layout: Layout,
     raw_ptr: *mut u8,
@@ -210,25 +214,18 @@ impl ForceFeedbackUpload {
         }
     }
 
-    pub fn to_vgp_device_force_feedback(&self) -> VgpDeviceForceFeedback {
+    pub fn get_data(&self) -> (u32, ForceFeedback) {
         let ptr = self.raw_ptr as *const uinput_ff_upload;
         unsafe {
-            VgpDeviceForceFeedback {
-                id: (*ptr).effect.id,
-                direction: (*ptr).effect.direction,
-                replay: VgpDeviceForceFeedbackReplay {
-                    length: (*ptr).effect.replay.length,
-                    delay: (*ptr).effect.replay.delay,
-                },
-                r#type: if (*ptr).effect.type_ == FF_RUMBLE as u16 {
-                    VgpDeviceForceFeedbackType::Rumble {
-                        strong_magnitude: (*ptr).effect.u.rumble.strong_magnitude,
-                        weak_magnitude: (*ptr).effect.u.rumble.weak_magnitude,
-                    }
-                } else {
-                    VgpDeviceForceFeedbackType::Unsupported
-                },
-            }
+            let force_feedback = if (*ptr).effect.type_ == FF_RUMBLE as u16 {
+                ForceFeedback::Rumble {
+                    large_motor: (*ptr).effect.u.rumble.strong_magnitude,
+                    small_motor: (*ptr).effect.u.rumble.weak_magnitude,
+                }
+            } else {
+                ForceFeedback::Unsupported
+            };
+            ((*ptr).effect.id as u32, force_feedback)
         }
     }
 }
