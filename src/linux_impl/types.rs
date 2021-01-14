@@ -182,6 +182,7 @@ impl Drop for InputEvent {
     }
 }
 
+#[derive(Debug)]
 pub enum ForceFeedback {
     Rumble { large_motor: u16, small_motor: u16 },
     Unsupported,
