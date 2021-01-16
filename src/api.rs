@@ -1,3 +1,5 @@
+use crate::windows_impl;
+
 #[derive(Debug)]
 pub enum Button {
     DpadDown,
@@ -55,7 +57,7 @@ pub enum Error {
 pub enum Error {
     VigemBusNotInstalled,
     VigemBusVersionMismatch,
-    Internal(vigem_client::Error),
+    Internal(windows_impl::Error),
     Unknown(String),
 }
 
@@ -80,11 +82,11 @@ impl<T> PlatformErrorExt<T> for Result<T, nix::Error> {
 }
 
 #[cfg(target_os = "windows")]
-impl<T> PlatformErrorExt<T> for Result<T, vigem_client::Error> {
+impl<T> PlatformErrorExt<T> for Result<T, windows_impl::Error> {
     fn map_with_vgp_error(self) -> Result<T, Error> {
         self.map_err(|e| match e {
-            vigem_client::Error::BusNotFound => Error::VigemBusNotInstalled,
-            vigem_client::Error::BusVersionMismatch => Error::VigemBusVersionMismatch,
+            windows_impl::Error::BusNotFound => Error::VigemBusNotInstalled,
+            windows_impl::Error::BusVersionMismatch => Error::VigemBusVersionMismatch,
             _ => Error::Internal(e),
         })
     }
