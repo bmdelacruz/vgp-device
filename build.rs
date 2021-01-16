@@ -46,7 +46,26 @@ fn main() {
 }
 
 #[cfg(target_os = "windows")]
-fn main() {}
+fn main() {
+    println!("cargo:rustc-link-lib=ViGEmClient");
+    println!("cargo:rustc-link-lib=setupapi");
+
+    #[cfg(target_arch = "x86_64")]
+    println!("cargo:rustc-link-search=lib/windows/x64");
+    #[cfg(target_arch = "x86")]
+    println!("cargo:rustc-link-search=lib/windows/x86");
+
+    println!("cargo:rerun-if-changed=bindings/windows_impl.h");
+
+    let bindings = bindgen::Builder::default()
+        .header("bindings/windows_impl.h")
+        .generate()
+        .unwrap();
+
+    let path = std::env::var("OUT_DIR").unwrap();
+    let path = std::path::PathBuf::from(&path);
+    bindings.write_to_file(path.join("bindings.rs")).unwrap();
+}
 
 #[cfg(target_os = "macos")]
 fn main() {}
